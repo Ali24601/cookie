@@ -1,0 +1,9 @@
+在应用程序类中重写如下函数,截获部分按键并直接返回。达到提前关闭splashwnd的效果
+BOOL CXXXApp::PreTranslateMessage(MSG* pMsg)
+{
+	if (CSplashWnd::PreTranslateAppMessage(pMsg))
+	{
+		return TRUE;
+	}
+	return CWinApp::PreTranslateMessage(pMsg);
+}
