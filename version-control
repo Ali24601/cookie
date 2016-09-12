@@ -1,0 +1,58 @@
+//sll 2015.10.9 添加一个判定软件版本的宏
+//功能模块的开关为后12位中的某一位
+//即从0x0001到0x0001<<11
+//功能
+#define OFFLINE_MAT 0x00000001   //离线素材
+#define HOUSE_BUDGET 0x00000002  //预算功能
+#define IN_EXPORT_GROUP 0x00000004  //保存群组
+#define LOCAL_REDNER 0x00000008  //本地渲染
+#define MAKING_TMPL 0x00000010   //本地制作和导入模板
+#define X_RENDER 0x00000020  //渲云渲染
+#define IMPORT_3DS 0x00000040  //导入3DS模型
+#define IMPORT_TEXTURE 0x00000080  //导入纹理文件
+#define EXPORT_ZYJ 0x00000100  //导出赞云家文件
+#define UPLOAD_HOM 0x00000200  //上传样板房模板
+#define WATCH_SUO 0x00000400  //安全检测
+#define TEMPLATE_MODEL 0x00000800  //二维分割窗口可导入模型
+#define TRY_USE 0x00001000  //专业试用版本--破坏了原有定义
+
+//不要在外部调用下面几个宏，用对应的VERSION宏值替代
+//版本类型，用高4位中的某一位表示
+#define ED_FIELD 0xf0000000
+#define TRIAL_ED 0x10000000
+#define HOME_ED  0x20000000
+#define STORE_ED 0x40000000
+#define INNER_ED 0x80000000
+
+//版本参数
+//设置每个版本中各个功能的开关，包含功能模块宏则打开模块
+//每个XX_VERSION需要包含同名的XX_ED，不要重复
+#define TRIAL_VERSION (TRIAL_ED)
+#define HOME_VERSION (HOME_ED|OFFLINE_MAT|HOUSE_BUDGET|IN_EXPORT_GROUP|LOCAL_REDNER|WATCH_SUO|IMPORT_TEXTURE)//jiang gai 2016.3.22 专业版增加导入纹理
+#define STORE_VERSION (STORE_ED|OFFLINE_MAT|HOUSE_BUDGET|IN_EXPORT_GROUP|LOCAL_REDNER|WATCH_SUO)
+#define INNER_VERSION (INNER_ED|OFFLINE_MAT|HOUSE_BUDGET|IN_EXPORT_GROUP|LOCAL_REDNER|MAKING_TMPL|X_RENDER|IMPORT_3DS|IMPORT_TEXTURE|EXPORT_ZYJ|UPLOAD_HOM|WATCH_SUO|TEMPLATE_MODEL)
+
+/********************************************************/
+//定义当前版本类型，右边宏为上面VERSION中的某一个
+//通过给这个宏不同的值，来实现版本切换
+//不要在外部调用这个宏
+#define CUR_VERSION INNER_VERSION
+/********************************************************/
+
+//唯一的接口宏
+//参数：VERSION或者功能模块
+//example1:
+//if(GetSwitch(OFFLINE_MAT))
+// {
+//	 afunction();
+// }
+// else
+//	 anotherfunction();
+//example2:
+//if(GetSwitch(HOME_VERSION))
+// {
+//	 afunction();
+// }
+// else
+//	 anotherfunction();
+#define GetSwitch(a) ((a&ED_FIELD)?(a&ED_FIELD&CUR_VERSION):(a&CUR_VERSION))
